@@ -977,12 +977,13 @@ class ProcessSystem {
             id: Date.now(),
             title: title,
             category: category,
-            department: department,
+            subcategory: "常规流程", // 添加子分类，默认值
             description: description,
-            visibleTo: visibleTo,
+            department: department,
+            visibleTo: visibleTo, // 确保这个属性存在
             steps: steps,
-            owner: owner,
-            version: version,
+            owner: owner || department, // 如果未指定负责人，使用部门
+            version: version || "1.0",
             createdAt: new Date().toISOString().split('T')[0],
             updatedAt: new Date().toISOString().split('T')[0]
         };
@@ -1428,3 +1429,4 @@ function confirmDeleteUser() {
 function exportUsers() {
     if (userManagement) userManagement.exportUsers();
 }
+
