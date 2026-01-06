@@ -905,6 +905,10 @@ body {
     max-width: 1000px;
 }
 
+.modal-content.small {
+    max-width: 500px;
+}
+
 .modal-header {
     padding: 25px 30px;
     border-bottom: 1px solid #e9ecef;
@@ -1140,6 +1144,25 @@ body {
     background: #5a6268;
 }
 
+.btn-danger {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.3s;
+}
+
+.btn-danger:hover {
+    background: #c53030;
+}
+
 /* 流程详情样式 */
 .process-meta {
     display: grid;
@@ -1221,101 +1244,6 @@ body {
 .step-detail-content {
     color: #495057;
     line-height: 1.6;
-}
-
-/* 响应式设计 */
-@media (max-width: 1200px) {
-    .role-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 992px) {
-    .main-container {
-        flex-direction: column;
-    }
-    
-    .sidebar {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid #e9ecef;
-        max-height: 400px;
-        overflow-y: auto;
-    }
-    
-    .sidebar.collapsed {
-        display: none;
-    }
-    
-    .role-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .header-left {
-        flex-wrap: wrap;
-    }
-    
-    .search-container {
-        order: 3;
-        width: 100%;
-        margin-top: 10px;
-    }
-    
-    .content-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-    
-    .process-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .role-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 576px) {
-    .login-card {
-        padding: 15px;
-    }
-    
-    .brand-header {
-        padding: 30px 20px;
-    }
-    
-    .brand-header h1 {
-        font-size: 2rem;
-    }
-    
-    .role-selector {
-        padding: 20px;
-    }
-    
-    .main-header {
-        padding: 0 15px;
-        height: 60px;
-    }
-    
-    .content {
-        padding: 20px 15px;
-    }
-    
-    .modal-content {
-        margin: 10px;
-    }
-    
-    .modal-body {
-        padding: 20px;
-    }
-
 }
 
 /* 账号管理样式 */
@@ -1477,31 +1405,64 @@ body {
     margin-bottom: 5px;
 }
 
-/* 确认删除模态框 */
-.modal-content.small {
-    max-width: 500px;
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .role-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
-.btn-danger {
-    background: #e53e3e;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    transition: background 0.3s;
+@media (max-width: 992px) {
+    .main-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e9ecef;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .sidebar.collapsed {
+        display: none;
+    }
+    
+    .role-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-.btn-danger:hover {
-    background: #c53030;
-}
-
-/* 响应式调整 */
 @media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-left {
+        flex-wrap: wrap;
+    }
+    
+    .search-container {
+        order: 3;
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .process-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .role-grid {
+        grid-template-columns: 1fr;
+    }
+    
     .user-table {
         font-size: 0.8rem;
     }
@@ -1524,5 +1485,40 @@ body {
     .add-user-form .form-grid,
     .change-password-form .form-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .login-card {
+        padding: 15px;
+    }
+    
+    .brand-header {
+        padding: 30px 20px;
+    }
+    
+    .brand-header h1 {
+        font-size: 2rem;
+    }
+    
+    .role-selector {
+        padding: 20px;
+    }
+    
+    .main-header {
+        padding: 0 15px;
+        height: 60px;
+    }
+    
+    .content {
+        padding: 20px 15px;
+    }
+    
+    .modal-content {
+        margin: 10px;
+    }
+    
+    .modal-body {
+        padding: 20px;
     }
 }
