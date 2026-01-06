@@ -1232,4 +1232,275 @@ function viewProcessDetail(processId) {
 
 function exportProcesses() {
     processSystem.exportProcesses();
+
+}
+
+// 账号管理功能
+class UserManagement {
+    constructor() {
+        this.currentEditingUser = null;
+    }
+    
+    // 显示账号管理界面
+    showUserManagement() {
+        if (processSystem.currentUser.role !== 'admin') {
+            alert('只有管理员可以访问账号管理功能');
+            return;
+        }
+        
+        this.loadUserList();
+        processSystem.showModal('userManagementModal');
+    }
+    
+    // 加载用户列表
+    loadUserList() {
+        const userListElement = document.getElementById('userList');
+        if (!userListElement) return;
+        
+        const users = window.userManager.users;
+        let html = '';
+        
+        if (users.length === 0) {
+            html = '<tr><td colspan="6" style="text-align: center; padding: 20px;">暂无用户数据</td></tr>';
+        } else {
+            users.forEach(user => {
+                // 跳过当前登录的管理员自己
+                if (user.id === processSystem.currentUser.id) return;
+                
+                const roleName = processSystem.getRoleName(user.role);
+                html += `
+                    <tr data-user-id="${user.id}">
+                        <td>${user.username}</td>
+                        <td><span class="role-badge">${roleName}</span></td>
+                        <td>${user.department || '-'}</td>
+                        <td>${user.name || '-'}</td>
+                        <td>${user.createdAt || '未知'}</td>
+                        <td class="user-actions">
+                            <button class="btn-action-small" onclick="userManagement.changePassword(${user.id})">
+                                <i class="fas fa-key"></i> 改密
+                            </button>
+                            <button class="btn-action-small btn-danger" onclick="userManagement.deleteUser(${user.id})">
+                                <i class="fas fa-trash"></i> 删除
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        
+        userListElement.innerHTML = html;
+    }
+    
+    // 显示添加用户表单
+    showAddUserForm() {
+        document.getElementById('addUserForm').style.display = 'block';
+        document.getElementById('addUserFormElement').reset();
+        
+        // 滚动到表单位置
+        document.getElementById('addUserForm').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // 隐藏添加用户表单
+    hideAddUserForm() {
+        document.getElementById('addUserForm').style.display = 'none';
+    }
+    
+    // 添加新用户
+    addNewUser(event) {
+        event.preventDefault();
+        
+        const username = document.getElementById('newUsername').value.trim();
+        const role = document.getElementById('newUserRole').value;
+        const department = document.getElementById('newUserDepartment').value;
+        const name = document.getElementById('newUserName').value.trim();
+        const password = document.getElementById('newUserPassword').value;
+        const email = document.getElementById('newUserEmail').value.trim();
+        
+        // 验证用户名是否已存在
+        const existingUser = window.userManager.users.find(u => u.username === username);
+        if (existingUser) {
+            alert('用户名已存在，请使用其他用户名');
+            return false;
+        }
+        
+        // 创建新用户
+        const newUser = {
+            id: Date.now(),
+            username: username,
+            password: password,
+            role: role,
+            department: department,
+            name: name,
+            email: email || undefined,
+            createdAt: new Date().toISOString().split('T')[0],
+            isActive: true
+        };
+        
+        // 添加到用户管理器
+        window.userManager.addUser(newUser);
+        
+        // 重新加载用户列表
+        this.loadUserList();
+        
+        // 隐藏表单
+        this.hideAddUserForm();
+        
+        // 显示成功消息
+        alert(`用户 ${name} (${username}) 创建成功！\n初始密码：${password}`);
+        
+        return false;
+    }
+    
+    // 修改密码
+    changePassword(userId) {
+        this.currentEditingUser = window.userManager.getUserById(userId);
+        if (!this.currentEditingUser) {
+            alert('用户不存在');
+            return;
+        }
+        
+        // 如果是修改当前登录用户的密码，需要验证当前密码
+        if (userId === processSystem.currentUser.id) {
+            document.getElementById('currentPassword').style.display = 'block';
+            document.querySelector('label[for="currentPassword"]').style.display = 'block';
+        } else {
+            document.getElementById('currentPassword').style.display = 'none';
+            document.querySelector('label[for="currentPassword"]').style.display = 'none';
+        }
+        
+        document.getElementById('targetUserId').value = userId;
+        document.getElementById('changePasswordForm').style.display = 'block';
+        document.getElementById('changePasswordFormElement').reset();
+        
+        // 滚动到表单位置
+        document.getElementById('changePasswordForm').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // 隐藏修改密码表单
+    hideChangePasswordForm() {
+        document.getElementById('changePasswordForm').style.display = 'none';
+        this.currentEditingUser = null;
+    }
+    
+    // 执行密码修改
+    changeUserPassword(event) {
+        event.preventDefault();
+        
+        const userId = parseInt(document.getElementById('targetUserId').value);
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        // 验证新密码
+        if (newPassword.length < 6) {
+            alert('新密码至少需要6位字符');
+            return false;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            alert('两次输入的新密码不一致');
+            return false;
+        }
+        
+        // 如果是修改当前用户的密码，需要验证当前密码
+        if (userId === processSystem.currentUser.id) {
+            const currentUser = window.userManager.currentUser;
+            if (currentPassword !== currentUser.password) {
+                alert('当前密码错误');
+                return false;
+            }
+        }
+        
+        // 执行密码修改
+        const success = window.userManager.changePassword(userId, newPassword);
+        
+        if (success) {
+            alert('密码修改成功！');
+            this.hideChangePasswordForm();
+            this.loadUserList();
+        } else {
+            alert('密码修改失败，请稍后重试');
+        }
+        
+        return false;
+    }
+    
+    // 删除用户
+    deleteUser(userId) {
+        const user = window.userManager.getUserById(userId);
+        if (!user) return;
+        
+        // 不能删除当前登录用户
+        if (userId === processSystem.currentUser.id) {
+            alert('不能删除当前登录的用户');
+            return;
+        }
+        
+        document.getElementById('userToDeleteId').value = userId;
+        document.getElementById('deleteConfirmText').textContent = 
+            `确定要删除用户 "${user.name} (${user.username})" 吗？此操作不可恢复。`;
+        
+        processSystem.showModal('confirmDeleteModal');
+    }
+    
+    // 确认删除用户
+    confirmDeleteUser() {
+        const userId = parseInt(document.getElementById('userToDeleteId').value);
+        
+        const success = window.userManager.deleteUser(userId);
+        if (success) {
+            alert('用户删除成功');
+            this.loadUserList();
+        } else {
+            alert('用户删除失败');
+        }
+        
+        processSystem.closeModal('confirmDeleteModal');
+    }
+    
+    // 导出用户列表
+    exportUsers() {
+        const users = window.userManager.users;
+        const dataStr = JSON.stringify(users, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        const exportFileDefaultName = `用户账号数据_${new Date().toISOString().split('T')[0]}.json`;
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+    }
+}
+
+// 创建全局实例
+const userManagement = new UserManagement();
+
+// 全局函数供HTML调用
+function showUserManagement() {
+    userManagement.showUserManagement();
+}
+
+function showAddUserForm() {
+    userManagement.showAddUserForm();
+}
+
+function hideAddUserForm() {
+    userManagement.hideAddUserForm();
+}
+
+function addNewUser(event) {
+    return userManagement.addNewUser(event);
+}
+
+function changeUserPassword(event) {
+    return userManagement.changeUserPassword(event);
+}
+
+function hideChangePasswordForm() {
+    userManagement.hideChangePasswordForm();
+}
+
+function confirmDeleteUser() {
+    userManagement.confirmDeleteUser();
 }
