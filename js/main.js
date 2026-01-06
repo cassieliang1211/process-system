@@ -57,9 +57,9 @@ class ProcessSystem {
             
             // 初始化ProcessManager
             if (!window.processManager) {
-                window.processManager = new ProcessManager(data.processes);
+                window.processManager = new ProcessManager(data.processes || []);
             } else {
-                window.processManager.setProcesses(data.processes);
+                window.processManager.setProcesses(data.processes || []);
             }
             
             // 初始化UserManager
@@ -117,86 +117,6 @@ class ProcessSystem {
                 version: "3.0",
                 createdAt: "2024-01-10",
                 updatedAt: "2024-02-28"
-            },
-            {
-                id: 3,
-                title: "请假审批流程",
-                category: "hr",
-                subcategory: "考勤管理",
-                description: "员工请假申请和审批流程",
-                department: "人力资源部",
-                visibleTo: ["admin", "manager", "hr"],
-                steps: [
-                    { number: 1, title: "提交申请", description: "员工在系统中提交请假申请" },
-                    { number: 2, title: "直接上级审批", description: "直接上级审批请假申请" },
-                    { number: 3, title: "HR备案", description: "人力资源部备案并更新考勤记录" },
-                    { number: 4, title: "请假生效", description: "请假申请生效，员工开始休假" }
-                ],
-                owner: "人力资源部",
-                version: "1.5",
-                createdAt: "2024-01-05",
-                updatedAt: "2024-02-15"
-            },
-            {
-                id: 4,
-                title: "采购审批流程",
-                category: "finance",
-                subcategory: "采购管理",
-                description: "公司采购物品和服务的审批流程",
-                department: "财务部",
-                visibleTo: ["admin", "manager", "finance"],
-                steps: [
-                    { number: 1, title: "提交采购申请", description: "填写采购需求申请单" },
-                    { number: 2, title: "预算审批", description: "财务部门审核预算" },
-                    { number: 3, title: "采购执行", description: "采购部门执行采购" },
-                    { number: 4, title: "验收付款", description: "验收合格后办理付款" },
-                    { number: 5, title: "入库登记", description: "物品入库登记，更新资产台账" }
-                ],
-                owner: "采购部",
-                version: "2.2",
-                createdAt: "2024-01-20",
-                updatedAt: "2024-03-05"
-            },
-            {
-                id: 5,
-                title: "软件开发流程",
-                category: "tech",
-                subcategory: "研发管理",
-                description: "软件项目从需求到上线的完整流程",
-                department: "技术部",
-                visibleTo: ["admin", "manager", "tech"],
-                steps: [
-                    { number: 1, title: "需求分析", description: "与业务部门沟通，明确需求" },
-                    { number: 2, title: "技术设计", description: "进行系统架构和技术方案设计" },
-                    { number: 3, title: "开发实现", description: "编写代码，实现功能" },
-                    { number: 4, title: "测试验收", description: "进行系统测试和用户验收" },
-                    { number: 5, title: "上线部署", description: "部署到生产环境，正式上线" }
-                ],
-                owner: "技术部",
-                version: "4.0",
-                createdAt: "2024-02-01",
-                updatedAt: "2024-03-20"
-            },
-            {
-                id: 6,
-                title: "客户投诉处理流程",
-                category: "sales",
-                subcategory: "客户服务",
-                description: "规范客户投诉的接收、处理和反馈流程",
-                department: "客户服务部",
-                visibleTo: ["admin", "manager", "sales"],
-                steps: [
-                    { number: 1, title: "投诉接收", description: "客服人员记录客户投诉内容" },
-                    { number: 2, title: "问题分析", description: "相关部门分析投诉原因" },
-                    { number: 3, title: "制定方案", description: "制定解决方案和处理计划" },
-                    { number: 4, title: "执行处理", description: "执行解决方案" },
-                    { number: 5, title: "客户反馈", description: "向客户反馈处理结果" },
-                    { number: 6, title: "问题归档", description: "将投诉案例归档，用于改进服务" }
-                ],
-                owner: "客户服务部",
-                version: "2.3",
-                createdAt: "2024-02-10",
-                updatedAt: "2024-03-15"
             }
         ];
         
@@ -206,11 +126,11 @@ class ProcessSystem {
         
         if (!window.userManager) {
             const defaultUsers = [
-                { id: 1, username: "admin", role: "admin", department: "管理部", name: "系统管理员" },
-                { id: 2, username: "manager", role: "manager", department: "管理部", name: "部门经理" },
-                { id: 3, username: "hr", role: "hr", department: "人力资源部", name: "人事专员" },
-                { id: 4, username: "finance", role: "finance", department: "财务部", name: "财务人员" },
-                { id: 5, username: "employee", role: "employee", department: "技术部", name: "普通员工" }
+                { id: 1, username: "admin", password: "123456", role: "admin", department: "管理部", name: "系统管理员" },
+                { id: 2, username: "manager", password: "123456", role: "manager", department: "管理部", name: "部门经理" },
+                { id: 3, username: "hr", password: "123456", role: "hr", department: "人力资源部", name: "人事专员" },
+                { id: 4, username: "finance", password: "123456", role: "finance", department: "财务部", name: "财务人员" },
+                { id: 5, username: "employee", password: "123456", role: "employee", department: "技术部", name: "普通员工" }
             ];
             window.userManager = new UserManager(defaultUsers);
         }
@@ -267,13 +187,14 @@ class ProcessSystem {
         }
         
         // 模拟登录验证
-        this.currentUser = window.userManager.getUserByRole(this.selectedRole);
+        const user = window.userManager.getUserByRole(this.selectedRole);
         
-        if (this.currentUser) {
+        if (user && user.password === password) {
+            this.currentUser = user;
             this.saveSession();
             this.showMainPage();
         } else {
-            alert('登录失败，请稍后重试');
+            alert('登录失败，请检查密码');
         }
     }
     
@@ -1006,7 +927,7 @@ class ProcessSystem {
     // 移除步骤
     removeStep(button) {
         const stepItem = button.closest('.step-item');
-        if (stepItem && stepsContainer.children.length > 1) {
+        if (stepItem && document.getElementById('stepsContainer').children.length > 1) {
             stepItem.remove();
             this.renumberSteps();
         }
@@ -1169,72 +1090,6 @@ class ProcessSystem {
     }
 }
 
-// 创建全局实例
-let processSystem;
-
-// 页面加载完成后初始化系统
-document.addEventListener('DOMContentLoaded', () => {
-    processSystem = new ProcessSystem();
-});
-
-// 全局函数供HTML调用
-function selectRole(role) {
-    processSystem.selectRole(role);
-}
-
-function login() {
-    processSystem.login();
-}
-
-function logout() {
-    processSystem.logout();
-}
-
-function toggleSidebar() {
-    processSystem.toggleSidebar();
-}
-
-function collapseAllCategories() {
-    processSystem.collapseAllCategories();
-}
-
-function searchProcesses() {
-    processSystem.searchProcesses();
-}
-
-function toggleViewMode() {
-    processSystem.toggleViewMode();
-}
-
-function refreshData() {
-    processSystem.refreshData();
-}
-
-function showAddProcessModal() {
-    processSystem.showAddProcessModal();
-}
-
-function closeModal(modalId) {
-    processSystem.closeModal(modalId);
-}
-
-function addStep() {
-    processSystem.addStep();
-}
-
-function removeStep(button) {
-    processSystem.removeStep(button);
-}
-
-function viewProcessDetail(processId) {
-    processSystem.viewProcessDetail(processId);
-}
-
-function exportProcesses() {
-    processSystem.exportProcesses();
-
-}
-
 // 账号管理功能
 class UserManagement {
     constructor() {
@@ -1243,7 +1098,7 @@ class UserManagement {
     
     // 显示账号管理界面
     showUserManagement() {
-        if (processSystem.currentUser.role !== 'admin') {
+        if (!processSystem.currentUser || processSystem.currentUser.role !== 'admin') {
             alert('只有管理员可以访问账号管理功能');
             return;
         }
@@ -1257,14 +1112,14 @@ class UserManagement {
         const userListElement = document.getElementById('userList');
         if (!userListElement) return;
         
-        const users = window.userManager.users;
+        const users = window.userManager.getAllUsers();
         let html = '';
         
         if (users.length === 0) {
             html = '<tr><td colspan="6" style="text-align: center; padding: 20px;">暂无用户数据</td></tr>';
         } else {
             users.forEach(user => {
-                // 跳过当前登录的管理员自己
+                // 跳过当前登录的管理员自己（可选）
                 if (user.id === processSystem.currentUser.id) return;
                 
                 const roleName = processSystem.getRoleName(user.role);
@@ -1317,38 +1172,37 @@ class UserManagement {
         const email = document.getElementById('newUserEmail').value.trim();
         
         // 验证用户名是否已存在
-        const existingUser = window.userManager.users.find(u => u.username === username);
+        const existingUser = window.userManager.getUserByUsername(username);
         if (existingUser) {
             alert('用户名已存在，请使用其他用户名');
             return false;
         }
         
-        // 创建新用户
-        const newUser = {
-            id: Date.now(),
-            username: username,
-            password: password,
-            role: role,
-            department: department,
-            name: name,
-            email: email || undefined,
-            createdAt: new Date().toISOString().split('T')[0],
-            isActive: true
-        };
-        
-        // 添加到用户管理器
-        window.userManager.addUser(newUser);
-        
-        // 重新加载用户列表
-        this.loadUserList();
-        
-        // 隐藏表单
-        this.hideAddUserForm();
-        
-        // 显示成功消息
-        alert(`用户 ${name} (${username}) 创建成功！\n初始密码：${password}`);
-        
-        return false;
+        try {
+            // 创建新用户
+            const newUser = window.userManager.addUser({
+                username: username,
+                password: password,
+                role: role,
+                department: department,
+                name: name,
+                email: email || undefined
+            });
+            
+            // 重新加载用户列表
+            this.loadUserList();
+            
+            // 隐藏表单
+            this.hideAddUserForm();
+            
+            // 显示成功消息
+            alert(`用户 ${name} (${username}) 创建成功！\n初始密码：${password}`);
+            
+            return true;
+        } catch (error) {
+            alert('添加用户失败: ' + error.message);
+            return false;
+        }
     }
     
     // 修改密码
@@ -1402,27 +1256,28 @@ class UserManagement {
             return false;
         }
         
-        // 如果是修改当前用户的密码，需要验证当前密码
-        if (userId === processSystem.currentUser.id) {
-            const currentUser = window.userManager.currentUser;
-            if (currentPassword !== currentUser.password) {
-                alert('当前密码错误');
-                return false;
+        try {
+            // 如果是修改当前用户的密码，需要验证当前密码
+            if (userId === processSystem.currentUser.id) {
+                const currentUser = window.userManager.currentUser;
+                if (currentPassword !== currentUser.password) {
+                    alert('当前密码错误');
+                    return false;
+                }
             }
-        }
-        
-        // 执行密码修改
-        const success = window.userManager.changePassword(userId, newPassword);
-        
-        if (success) {
+            
+            // 执行密码修改
+            window.userManager.changePassword(userId, newPassword);
+            
             alert('密码修改成功！');
             this.hideChangePasswordForm();
             this.loadUserList();
-        } else {
-            alert('密码修改失败，请稍后重试');
+            
+            return true;
+        } catch (error) {
+            alert('密码修改失败: ' + error.message);
+            return false;
         }
-        
-        return false;
     }
     
     // 删除用户
@@ -1447,12 +1302,12 @@ class UserManagement {
     confirmDeleteUser() {
         const userId = parseInt(document.getElementById('userToDeleteId').value);
         
-        const success = window.userManager.deleteUser(userId);
-        if (success) {
+        try {
+            window.userManager.deleteUser(userId);
             alert('用户删除成功');
             this.loadUserList();
-        } else {
-            alert('用户删除失败');
+        } catch (error) {
+            alert('用户删除失败: ' + error.message);
         }
         
         processSystem.closeModal('confirmDeleteModal');
@@ -1460,7 +1315,7 @@ class UserManagement {
     
     // 导出用户列表
     exportUsers() {
-        const users = window.userManager.users;
+        const users = window.userManager.getAllUsers();
         const dataStr = JSON.stringify(users, null, 2);
         const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
         
@@ -1474,33 +1329,102 @@ class UserManagement {
 }
 
 // 创建全局实例
-const userManagement = new UserManagement();
+let processSystem;
+let userManagement;
+
+// 页面加载完成后初始化系统
+document.addEventListener('DOMContentLoaded', () => {
+    processSystem = new ProcessSystem();
+    userManagement = new UserManagement();
+});
 
 // 全局函数供HTML调用
+function selectRole(role) {
+    if (processSystem) processSystem.selectRole(role);
+}
+
+function login() {
+    if (processSystem) processSystem.login();
+}
+
+function logout() {
+    if (processSystem) processSystem.logout();
+}
+
+function toggleSidebar() {
+    if (processSystem) processSystem.toggleSidebar();
+}
+
+function collapseAllCategories() {
+    if (processSystem) processSystem.collapseAllCategories();
+}
+
+function searchProcesses() {
+    if (processSystem) processSystem.searchProcesses();
+}
+
+function toggleViewMode() {
+    if (processSystem) processSystem.toggleViewMode();
+}
+
+function refreshData() {
+    if (processSystem) processSystem.refreshData();
+}
+
+function showAddProcessModal() {
+    if (processSystem) processSystem.showAddProcessModal();
+}
+
+function closeModal(modalId) {
+    if (processSystem) processSystem.closeModal(modalId);
+}
+
+function addStep() {
+    if (processSystem) processSystem.addStep();
+}
+
+function removeStep(button) {
+    if (processSystem) processSystem.removeStep(button);
+}
+
+function viewProcessDetail(processId) {
+    if (processSystem) processSystem.viewProcessDetail(processId);
+}
+
+function exportProcesses() {
+    if (processSystem) processSystem.exportProcesses();
+}
+
 function showUserManagement() {
-    userManagement.showUserManagement();
+    if (userManagement) userManagement.showUserManagement();
 }
 
 function showAddUserForm() {
-    userManagement.showAddUserForm();
+    if (userManagement) userManagement.showAddUserForm();
 }
 
 function hideAddUserForm() {
-    userManagement.hideAddUserForm();
+    if (userManagement) userManagement.hideAddUserForm();
 }
 
 function addNewUser(event) {
-    return userManagement.addNewUser(event);
+    if (userManagement) return userManagement.addNewUser(event);
+    return false;
 }
 
 function changeUserPassword(event) {
-    return userManagement.changeUserPassword(event);
+    if (userManagement) return userManagement.changeUserPassword(event);
+    return false;
 }
 
 function hideChangePasswordForm() {
-    userManagement.hideChangePasswordForm();
+    if (userManagement) userManagement.hideChangePasswordForm();
 }
 
 function confirmDeleteUser() {
-    userManagement.confirmDeleteUser();
+    if (userManagement) userManagement.confirmDeleteUser();
+}
+
+function exportUsers() {
+    if (userManagement) userManagement.exportUsers();
 }
