@@ -8,6 +8,177 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
+
+<!-- 账号管理模态框 -->
+<div class="modal" id="userManagementModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><i class="fas fa-user-cog"></i> 账号管理</h2>
+            <button class="modal-close" onclick="closeModal('userManagementModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="user-management-actions">
+                <button class="btn-primary" onclick="showAddUserForm()">
+                    <i class="fas fa-user-plus"></i> 添加新账号
+                </button>
+                <button class="btn-secondary" onclick="exportUsers()">
+                    <i class="fas fa-download"></i> 导出账号列表
+                </button>
+            </div>
+            
+            <!-- 用户列表 -->
+            <div class="user-list-section">
+                <h3><i class="fas fa-users"></i> 现有账号</h3>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>用户名</th>
+                                <th>角色</th>
+                                <th>部门</th>
+                                <th>姓名</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userList">
+                            <!-- 用户列表会动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 添加用户表单（默认隐藏） -->
+            <div class="add-user-form" id="addUserForm" style="display: none;">
+                <h3><i class="fas fa-user-plus"></i> 添加新用户</h3>
+                <form id="addUserFormElement" onsubmit="return addNewUser(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="newUsername"><i class="fas fa-user"></i> 用户名 *</label>
+                            <input type="text" id="newUsername" required placeholder="英文或拼音">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newUserRole"><i class="fas fa-user-tag"></i> 角色 *</label>
+                            <select id="newUserRole" required>
+                                <option value="">选择角色</option>
+                                <option value="admin">管理员</option>
+                                <option value="manager">部门经理</option>
+                                <option value="hr">人事专员</option>
+                                <option value="finance">财务人员</option>
+                                <option value="employee">普通员工</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newUserDepartment"><i class="fas fa-building"></i> 部门 *</label>
+                            <select id="newUserDepartment" required>
+                                <option value="">选择部门</option>
+                                <option value="管理部">管理部</option>
+                                <option value="人力资源部">人力资源部</option>
+                                <option value="财务部">财务部</option>
+                                <option value="技术部">技术部</option>
+                                <option value="销售部">销售部</option>
+                                <option value="行政部">行政部</option>
+                                <option value="运营部">运营部</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newUserName"><i class="fas fa-id-card"></i> 显示姓名 *</label>
+                            <input type="text" id="newUserName" required placeholder="中文姓名">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newUserPassword"><i class="fas fa-key"></i> 初始密码 *</label>
+                            <input type="password" id="newUserPassword" value="123456" required>
+                            <small>默认密码：123456，建议用户首次登录后修改</small>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="newUserEmail"><i class="fas fa-envelope"></i> 邮箱（可选）</label>
+                            <input type="email" id="newUserEmail" placeholder="用户邮箱">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> 创建账号
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="hideAddUserForm()">
+                            取消
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- 修改密码表单（默认隐藏） -->
+            <div class="change-password-form" id="changePasswordForm" style="display: none;">
+                <h3><i class="fas fa-key"></i> 修改密码</h3>
+                <form id="changePasswordFormElement" onsubmit="return changeUserPassword(event)">
+                    <input type="hidden" id="targetUserId">
+                    
+                    <div class="form-group">
+                        <label for="currentPassword"><i class="fas fa-lock"></i> 当前密码</label>
+                        <input type="password" id="currentPassword" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword"><i class="fas fa-lock"></i> 新密码 *</label>
+                        <input type="password" id="newPassword" required minlength="6" 
+                               placeholder="至少6位字符">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword"><i class="fas fa-lock"></i> 确认新密码 *</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+                    
+                    <div class="password-rules">
+                        <p><i class="fas fa-info-circle"></i> 密码要求：</p>
+                        <ul>
+                            <li>至少6位字符</li>
+                            <li>建议包含字母和数字</li>
+                            <li>区分大小写</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-key"></i> 修改密码
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="hideChangePasswordForm()">
+                            取消
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 确认删除模态框 -->
+<div class="modal" id="confirmDeleteModal">
+    <div class="modal-content small">
+        <div class="modal-header">
+            <h2><i class="fas fa-exclamation-triangle"></i> 确认删除</h2>
+            <button class="modal-close" onclick="closeModal('confirmDeleteModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="deleteConfirmText">确定要删除这个账号吗？此操作不可恢复。</p>
+            <input type="hidden" id="userToDeleteId">
+        </div>
+        <div class="modal-footer">
+            <button class="btn-danger" onclick="confirmDeleteUser()">
+                <i class="fas fa-trash"></i> 确认删除
+            </button>
+            <button class="btn-secondary" onclick="closeModal('confirmDeleteModal')">
+                取消
+            </button>
+        </div>
+    </div>
+</div>
+    
 <body>
     <!-- 登录页面 -->
     <div id="loginPage" class="page active">
@@ -172,13 +343,16 @@
                     </div>
                 </div>
                 
-                <!-- 管理员快速操作 -->
-                <div class="admin-quick-actions" id="adminActions">
-                    <h3><i class="fas fa-bolt"></i> 快速操作</h3>
-                    <button class="btn-quick-action" onclick="showAddProcessModal()">
-                        <i class="fas fa-plus-circle"></i> 添加流程
+                <!-- 管理员专属功能 -->
+                <div class="sidebar-section admin-only" id="adminPanel">
+                    <h3><i class="fas fa-cog"></i> 管理功能</h3>
+                    <button class="btn-admin" onclick="showAddProcessModal()">
+                        <i class="fas fa-plus"></i> 添加流程
                     </button>
-                    <button class="btn-quick-action" onclick="exportProcesses()">
+                    <button class="btn-admin" onclick="showUserManagement()">
+                        <i class="fas fa-user-cog"></i> 账号管理
+                    </button>
+                    <button class="btn-admin" onclick="exportProcesses()">
                         <i class="fas fa-download"></i> 导出数据
                     </button>
                 </div>
@@ -360,4 +534,5 @@
     <script src="js/process-manager.js"></script>
     <script src="js/ui.js"></script>
 </body>
+
 </html>
