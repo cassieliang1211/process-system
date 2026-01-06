@@ -1315,4 +1315,214 @@ body {
     .modal-body {
         padding: 20px;
     }
+
+}
+
+/* 账号管理样式 */
+.user-management-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.user-list-section {
+    margin-bottom: 30px;
+}
+
+.user-list-section h3 {
+    margin-bottom: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-table-container {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.user-table th {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.user-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1f3f5;
+    vertical-align: middle;
+}
+
+.user-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.user-table .role-badge {
+    background: #eef2ff;
+    color: #667eea;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.user-actions {
+    display: flex;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.btn-action-small {
+    padding: 5px 10px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #495057;
+    transition: all 0.2s;
+}
+
+.btn-action-small:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.btn-action-small.btn-danger {
+    background: #fff5f5;
+    border-color: #fed7d7;
+    color: #e53e3e;
+}
+
+.btn-action-small.btn-danger:hover {
+    background: #fed7d7;
+    border-color: #feb2b2;
+}
+
+/* 添加用户表单 */
+.add-user-form,
+.change-password-form {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 25px;
+    margin: 25px 0;
+    border: 1px solid #e9ecef;
+}
+
+.add-user-form h3,
+.change-password-form h3 {
+    margin-bottom: 20px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.add-user-form .form-grid,
+.change-password-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.add-user-form .form-group small,
+.change-password-form .form-group small {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* 密码规则 */
+.password-rules {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    border: 1px solid #e9ecef;
+}
+
+.password-rules p {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.password-rules ul {
+    margin-left: 20px;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.password-rules li {
+    margin-bottom: 5px;
+}
+
+/* 确认删除模态框 */
+.modal-content.small {
+    max-width: 500px;
+}
+
+.btn-danger {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.btn-danger:hover {
+    background: #c53030;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .user-table {
+        font-size: 0.8rem;
+    }
+    
+    .user-table th,
+    .user-table td {
+        padding: 8px 10px;
+    }
+    
+    .user-actions {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .btn-action-small {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .add-user-form .form-grid,
+    .change-password-form .form-grid {
+        grid-template-columns: 1fr;
+    }
 }
