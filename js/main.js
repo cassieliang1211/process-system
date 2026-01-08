@@ -1120,6 +1120,7 @@ initProcessCardEvents() {
         
         // 显示模态框
         this.showModal('processDetailModal');
+        console.log('显示详情模态框');
     }
     
     // 搜索流程
@@ -2243,6 +2244,7 @@ function testEditDeleteFunctions() {
 window.testEditDeleteFunctions = testEditDeleteFunctions;
 
 console.log('流程编辑删除功能已加载完成');
+
 
 
 
