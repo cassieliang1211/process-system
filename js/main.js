@@ -1730,12 +1730,12 @@ let currentViewingProcessId = null;
 function viewProcessDetail(processId) {
     console.log('查看流程详情，ID:', processId);
     
-    // 设置当前查看的流程ID
+    // 设置当前查看的流程ID（关键修复）
     window.currentViewingProcessId = parseInt(processId);
     console.log('设置 currentViewingProcessId:', window.currentViewingProcessId);
     
     // 调用原来的详情显示逻辑
-    if (processSystem) {
+    if (processSystem && processSystem.viewProcessDetail) {
         processSystem.viewProcessDetail(processId);
     }
 }
@@ -2216,5 +2216,6 @@ function testEditDeleteFunctions() {
 window.testEditDeleteFunctions = testEditDeleteFunctions;
 
 console.log('流程编辑删除功能已加载完成');
+
 
 
