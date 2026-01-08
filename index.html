@@ -351,10 +351,10 @@
                     <div class="process-steps" id="processStepsDetail"></div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn-primary" onclick="editCurrentProcess()" id="editProcessBtn">
+                    <button class="btn-primary" onclick="window.editCurrentProcess && window.editCurrentProcess()" id="editProcessBtn">
                         <i class="fas fa-edit"></i> 编辑流程
                     </button>
-                    <button class="btn-danger" onclick="deleteCurrentProcess()" id="deleteProcessBtn">
+                    <button class="btn-danger" onclick="window.deleteCurrentProcess && window.deleteCurrentProcess()" id="deleteProcessBtn">
                         <i class="fas fa-trash"></i> 删除流程
                     </button>
                     <button class="btn-secondary" onclick="closeModal('processDetailModal')">
@@ -676,4 +676,5 @@
     <script src="js/main.js"></script>
 </body>
 </html>
+
 
