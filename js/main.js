@@ -1013,17 +1013,44 @@ class ProcessSystem {
         container.innerHTML = html;
     }
     
-    // 初始化流程卡片事件
-    initProcessCardEvents() {
-        document.querySelectorAll('.process-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                if (!e.target.closest('.btn-view')) {
-                    const processId = card.dataset.id;
-                    this.viewProcessDetail(processId);
-                }
-            });
+// 初始化流程卡片事件 - 修复版
+initProcessCardEvents() {
+    document.querySelectorAll('.process-card').forEach(card => {
+        // 移除之前的事件监听器，避免重复绑定
+        const newCard = card.cloneNode(true);
+        card.parentNode.replaceChild(newCard, card);
+        
+        // 为新卡片添加点击事件
+        newCard.addEventListener('click', (e) => {
+            // 检查是否点击了不应该触发详情查看的元素
+            const clickedElement = e.target;
+            const isButton = clickedElement.closest('button') || 
+                           clickedElement.closest('.btn-view') || 
+                           clickedElement.closest('.btn-small') ||
+                           clickedElement.closest('.btn-edit') || 
+                           clickedElement.closest('.btn-delete');
+            
+            if (isButton) {
+                console.log('点击了按钮，不触发详情查看');
+                return;
+            }
+            
+            const processId = newCard.dataset.id;
+            console.log('流程卡片点击，ID:', processId);
+            
+            // 关键：设置当前查看的流程ID
+            window.currentViewingProcessId = parseInt(processId);
+            console.log('设置 currentViewingProcessId:', window.currentViewingProcessId);
+            
+            // 调用 viewProcessDetail
+            if (window.viewProcessDetail) {
+                window.viewProcessDetail(processId);
+            } else if (this.viewProcessDetail) {
+                this.viewProcessDetail(processId);
+            }
         });
-    }
+    });
+}
     
     // 查看流程详情
     viewProcessDetail(processId) {
@@ -2216,6 +2243,7 @@ function testEditDeleteFunctions() {
 window.testEditDeleteFunctions = testEditDeleteFunctions;
 
 console.log('流程编辑删除功能已加载完成');
+
 
 
 
