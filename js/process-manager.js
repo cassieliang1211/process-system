@@ -63,23 +63,35 @@ class ProcessManager {
     
     // 更新流程
     updateProcess(id, processData) {
+        console.log('正在更新流程:', id);
         const index = this.processes.findIndex(p => p.id === id);
         if (index !== -1) {
-            this.processes[index] = { ...this.processes[index], ...processData };
+            // 保留原始ID和创建时间，更新其他字段
+            this.processes[index] = { 
+                ...this.processes[index], 
+                ...processData,
+                id: id, // 确保ID不变
+                createdAt: this.processes[index].createdAt // 保留创建时间
+            };
+            console.log('流程更新成功');
             this.saveToLocalStorage();
             return this.processes[index];
         }
+        console.error('更新失败：流程不存在，ID:', id);
         return null;
     }
     
     // 删除流程
     deleteProcess(id) {
+        console.log('正在删除流程:', id);
         const index = this.processes.findIndex(p => p.id === id);
         if (index !== -1) {
             this.processes.splice(index, 1);
+            console.log('流程删除成功');
             this.saveToLocalStorage();
             return true;
         }
+        console.error('删除失败：流程不存在，ID:', id);
         return false;
     }
     
@@ -411,3 +423,4 @@ class UserManager {
         }
     }
 }
+
