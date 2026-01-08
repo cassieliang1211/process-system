@@ -1,3 +1,294 @@
+// ==================== 全局变量定义 ====================
+// 存储当前查看的流程ID（放在最顶部确保全局可用）
+window.currentViewingProcessId = null;
+
+// 流程编辑删除相关函数（放在最顶部确保全局可用）
+window.editCurrentProcess = function() {
+    console.log('editCurrentProcess 被调用');
+    
+    if (!window.currentViewingProcessId) {
+        console.error('currentViewingProcessId 未设置');
+        alert('请先选择一个流程');
+        return;
+    }
+    
+    const process = window.processManager.getProcessById(window.currentViewingProcessId);
+    if (!process) {
+        alert('流程不存在');
+        return;
+    }
+    
+    console.log('正在编辑流程:', process);
+    
+    // 关闭详情模态框
+    closeModal('processDetailModal');
+    
+    // 打开编辑模态框并填充数据
+    showEditProcessModal(process);
+};
+
+window.deleteCurrentProcess = function() {
+    console.log('deleteCurrentProcess 被调用');
+    
+    if (!window.currentViewingProcessId) {
+        console.error('currentViewingProcessId 未设置');
+        alert('请先选择一个流程');
+        return;
+    }
+    
+    const process = window.processManager.getProcessById(window.currentViewingProcessId);
+    if (!process) {
+        alert('流程不存在');
+        return;
+    }
+    
+    // 关闭详情模态框
+    closeModal('processDetailModal');
+    
+    // 显示确认删除模态框
+    document.getElementById('processToDeleteId').value = window.currentViewingProcessId;
+    document.getElementById('deleteProcessConfirmText').textContent = 
+        `确定要删除流程 "${process.title}" 吗？此操作不可恢复。`;
+    
+    showModal('confirmDeleteProcessModal');
+};
+
+// 显示编辑流程模态框
+window.showEditProcessModal = function(process) {
+    console.log('显示编辑模态框，流程:', process);
+    
+    // 填充基本信息
+    document.getElementById('editProcessId').value = process.id;
+    document.getElementById('editProcessTitle').value = process.title || '';
+    document.getElementById('editProcessCategory').value = process.category || '';
+    document.getElementById('editProcessSubcategory').value = process.subcategory || '';
+    document.getElementById('editProcessDepartment').value = process.department || '';
+    document.getElementById('editProcessDescription').value = process.description || '';
+    document.getElementById('editProcessOwner').value = process.owner || '';
+    document.getElementById('editProcessVersion').value = process.version || '1.0';
+    
+    // 填充可见角色
+    document.querySelectorAll('input[name="editRoles"]').forEach(checkbox => {
+        checkbox.checked = process.visibleTo && process.visibleTo.includes(checkbox.value);
+    });
+    
+    // 填充步骤
+    const stepsContainer = document.getElementById('editStepsContainer');
+    stepsContainer.innerHTML = '';
+    
+    if (process.steps && process.steps.length > 0) {
+        process.steps.forEach((step, index) => {
+            const stepHtml = `
+                <div class="step-item">
+                    <div class="step-header">
+                        <span class="step-number">${index + 1}</span>
+                        <input type="text" class="step-title" value="${step.title || ''}" placeholder="步骤标题" required>
+                        <button type="button" class="btn-step-remove" onclick="removeEditStep(this)">&times;</button>
+                    </div>
+                    <textarea class="step-details" placeholder="步骤详细说明..." required>${step.description || ''}</textarea>
+                </div>
+            `;
+            stepsContainer.insertAdjacentHTML('beforeend', stepHtml);
+        });
+    } else {
+        // 如果没有步骤，添加一个默认步骤
+        const stepHtml = `
+            <div class="step-item">
+                <div class="step-header">
+                    <span class="step-number">1</span>
+                    <input type="text" class="step-title" placeholder="步骤标题" required>
+                    <button type="button" class="btn-step-remove" onclick="removeEditStep(this)">&times;</button>
+                </div>
+                <textarea class="step-details" placeholder="步骤详细说明..." required></textarea>
+            </div>
+        `;
+        stepsContainer.innerHTML = stepHtml;
+    }
+    
+    // 显示编辑模态框
+    showModal('editProcessModal');
+};
+
+// 确认删除流程
+window.confirmDeleteProcess = function() {
+    const processId = parseInt(document.getElementById('processToDeleteId').value);
+    
+    console.log('确认删除流程:', processId);
+    
+    try {
+        const success = window.processManager.deleteProcess(processId);
+        
+        if (success) {
+            console.log('流程删除成功');
+            
+            // 关闭确认删除模态框
+            closeModal('confirmDeleteProcessModal');
+            
+            // 清除当前查看的流程ID
+            window.currentViewingProcessId = null;
+            
+            // 刷新页面显示
+            if (window.processSystem) {
+                window.processSystem.loadProcesses();
+                window.processSystem.initSidebarMenu();
+            }
+            
+            alert('流程删除成功！');
+        } else {
+            alert('流程删除失败：流程不存在');
+        }
+        
+    } catch (error) {
+        console.error('删除流程失败:', error);
+        alert('删除流程失败: ' + error.message);
+    }
+};
+
+// 更新流程
+window.updateProcess = function(event) {
+    event.preventDefault();
+    
+    console.log('正在更新流程...');
+    
+    // 收集表单数据
+    const processId = parseInt(document.getElementById('editProcessId').value);
+    const title = document.getElementById('editProcessTitle').value.trim();
+    const category = document.getElementById('editProcessCategory').value;
+    const subcategory = document.getElementById('editProcessSubcategory').value.trim();
+    const department = document.getElementById('editProcessDepartment').value;
+    const description = document.getElementById('editProcessDescription').value.trim();
+    const owner = document.getElementById('editProcessOwner').value.trim();
+    const version = document.getElementById('editProcessVersion').value.trim();
+    
+    // 收集可见角色
+    const roleCheckboxes = document.querySelectorAll('input[name="editRoles"]:checked');
+    const visibleTo = Array.from(roleCheckboxes).map(cb => cb.value);
+    
+    // 收集步骤
+    const stepItems = document.querySelectorAll('#editStepsContainer .step-item');
+    const steps = Array.from(stepItems).map((item, index) => {
+        const stepTitle = item.querySelector('.step-title').value.trim();
+        const stepDescription = item.querySelector('.step-details').value.trim();
+        return {
+            number: index + 1,
+            title: stepTitle,
+            description: stepDescription
+        };
+    });
+    
+    // 验证必填字段
+    if (!title) {
+        alert('请输入流程名称');
+        return false;
+    }
+    if (!category) {
+        alert('请选择流程分类');
+        return false;
+    }
+    if (!department) {
+        alert('请选择责任部门');
+        return false;
+    }
+    if (visibleTo.length === 0) {
+        alert('请至少选择一个可见角色');
+        return false;
+    }
+    if (steps.length === 0) {
+        alert('请至少添加一个步骤');
+        return false;
+    }
+    
+    // 更新流程对象
+    const updatedProcess = {
+        title: title,
+        category: category,
+        subcategory: subcategory || "常规流程",
+        description: description || "暂无描述",
+        department: department,
+        visibleTo: visibleTo,
+        steps: steps,
+        owner: owner || department,
+        version: version || "1.0",
+        updatedAt: new Date().toISOString().split('T')[0]
+    };
+    
+    console.log('更新的流程数据:', updatedProcess);
+    
+    try {
+        // 调用 processManager 的更新方法
+        const result = window.processManager.updateProcess(processId, updatedProcess);
+        
+        if (result) {
+            console.log('流程更新成功');
+            
+            // 关闭编辑模态框
+            closeModal('editProcessModal');
+            
+            // 刷新页面显示
+            if (window.processSystem) {
+                window.processSystem.loadProcesses();
+                window.processSystem.initSidebarMenu();
+            }
+            
+            // 如果当前正在查看这个流程，刷新详情
+            if (window.currentViewingProcessId === processId) {
+                // 重新打开详情模态框显示更新后的内容
+                setTimeout(() => {
+                    viewProcessDetail(processId);
+                    showModal('processDetailModal');
+                }, 100);
+            }
+            
+            alert('流程更新成功！');
+        } else {
+            alert('流程更新失败：流程不存在');
+        }
+        
+        return false;
+    } catch (error) {
+        console.error('更新流程失败:', error);
+        alert('更新流程失败: ' + error.message);
+        return false;
+    }
+};
+
+// 辅助函数
+window.addEditStep = function() {
+    const stepsContainer = document.getElementById('editStepsContainer');
+    const stepCount = stepsContainer.children.length + 1;
+    
+    const stepHtml = `
+        <div class="step-item">
+            <div class="step-header">
+                <span class="step-number">${stepCount}</span>
+                <input type="text" class="step-title" placeholder="步骤标题" required>
+                <button type="button" class="btn-step-remove" onclick="removeEditStep(this)">&times;</button>
+            </div>
+            <textarea class="step-details" placeholder="步骤详细说明..." required></textarea>
+        </div>
+    `;
+    
+    stepsContainer.insertAdjacentHTML('beforeend', stepHtml);
+};
+
+window.removeEditStep = function(button) {
+    const stepItem = button.closest('.step-item');
+    if (stepItem && document.getElementById('editStepsContainer').children.length > 1) {
+        stepItem.remove();
+        renumberEditSteps();
+    }
+};
+
+function renumberEditSteps() {
+    const steps = document.querySelectorAll('#editStepsContainer .step-item');
+    steps.forEach((step, index) => {
+        const numberElement = step.querySelector('.step-number');
+        if (numberElement) {
+            numberElement.textContent = index + 1;
+        }
+    });
+}
+
 // 系统主逻辑
 class ProcessSystem {
     constructor() {
@@ -1914,3 +2205,4 @@ function testEditDeleteFunctions() {
 window.testEditDeleteFunctions = testEditDeleteFunctions;
 
 console.log('流程编辑删除功能已加载完成');
+
