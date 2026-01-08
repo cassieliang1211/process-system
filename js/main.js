@@ -1753,21 +1753,21 @@ function exportUsers() {
 // 存储当前查看的流程ID
 let currentViewingProcessId = null;
 
-// 修改 viewProcessDetail 函数
+// 全局的 viewProcessDetail 函数
 function viewProcessDetail(processId) {
-    console.log('查看流程详情，ID:', processId);
+    console.log('viewProcessDetail 被调用，ID:', processId);
     
-    // 设置当前查看的流程ID（关键修复）
+    // 确保设置 currentViewingProcessId
     window.currentViewingProcessId = parseInt(processId);
-    console.log('设置 currentViewingProcessId:', window.currentViewingProcessId);
+    console.log('全局函数设置 currentViewingProcessId:', window.currentViewingProcessId);
     
-    // 调用原来的详情显示逻辑
-    if (processSystem && processSystem.viewProcessDetail) {
-        processSystem.viewProcessDetail(processId);
+    // 调用 processSystem 的方法
+    if (window.processSystem && window.processSystem.viewProcessDetail) {
+        window.processSystem.viewProcessDetail(processId);
     }
 }
 
-// 确保这个函数是全局的
+// 暴露到全局
 window.viewProcessDetail = viewProcessDetail;
 
 // 编辑当前查看的流程
@@ -2243,6 +2243,7 @@ function testEditDeleteFunctions() {
 window.testEditDeleteFunctions = testEditDeleteFunctions;
 
 console.log('流程编辑删除功能已加载完成');
+
 
 
 
