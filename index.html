@@ -338,7 +338,7 @@
             </div>
         </div>
         
-        <!-- 流程详情模态框 -->
+        <!-- 流程详情模态框 - 修改版 -->
         <div class="modal" id="processDetailModal">
             <div class="modal-content wide">
                 <div class="modal-header">
@@ -351,8 +351,151 @@
                     <div class="process-steps" id="processStepsDetail"></div>
                 </div>
                 <div class="modal-footer">
+                    <button class="btn-primary" onclick="editCurrentProcess()" id="editProcessBtn">
+                        <i class="fas fa-edit"></i> 编辑流程
+                    </button>
+                    <button class="btn-danger" onclick="deleteCurrentProcess()" id="deleteProcessBtn">
+                        <i class="fas fa-trash"></i> 删除流程
+                    </button>
                     <button class="btn-secondary" onclick="closeModal('processDetailModal')">
                         关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 编辑流程模态框（新增） -->
+        <div class="modal" id="editProcessModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-edit"></i> 编辑业务流程</h2>
+                    <button class="modal-close" onclick="closeModal('editProcessModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProcessForm" onsubmit="return updateProcess(event)">
+                        <div class="form-grid">
+                            <input type="hidden" id="editProcessId">
+                            
+                            <div class="form-group">
+                                <label for="editProcessTitle"><i class="fas fa-heading"></i> 流程名称 *</label>
+                                <input type="text" id="editProcessTitle" required placeholder="例如：新员工入职流程">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="editProcessCategory"><i class="fas fa-folder"></i> 流程分类 *</label>
+                                <select id="editProcessCategory" required>
+                                    <option value="">选择分类</option>
+                                    <option value="hr">人事行政</option>
+                                    <option value="finance">财务管理</option>
+                                    <option value="sales">销售业务</option>
+                                    <option value="tech">技术研发</option>
+                                    <option value="operation">运营管理</option>
+                                    <option value="other">其他</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="editProcessSubcategory"><i class="fas fa-tag"></i> 子分类</label>
+                                <input type="text" id="editProcessSubcategory" placeholder="例如：招聘入职">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="editProcessDepartment"><i class="fas fa-building"></i> 责任部门 *</label>
+                                <select id="editProcessDepartment" required>
+                                    <option value="">选择部门</option>
+                                    <option value="人力资源部">人力资源部</option>
+                                    <option value="财务部">财务部</option>
+                                    <option value="销售部">销售部</option>
+                                    <option value="技术部">技术部</option>
+                                    <option value="行政部">行政部</option>
+                                    <option value="运营部">运营部</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label><i class="fas fa-users"></i> 可见角色权限 *</label>
+                                <div class="checkbox-group" id="editPermissionCheckboxes">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="editRoles" value="admin">
+                                        <span>管理员</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="editRoles" value="manager">
+                                        <span>部门经理</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="editRoles" value="hr">
+                                        <span>人事专员</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="editRoles" value="finance">
+                                        <span>财务人员</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="editRoles" value="employee">
+                                        <span>普通员工</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="editProcessDescription"><i class="fas fa-align-left"></i> 流程描述</label>
+                                <textarea id="editProcessDescription" rows="3" placeholder="简要描述此流程的目的和适用范围"></textarea>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="editProcessSteps"><i class="fas fa-list-ol"></i> 流程步骤 *</label>
+                                <div class="steps-editor">
+                                    <div class="steps-container" id="editStepsContainer">
+                                        <!-- 步骤会动态加载 -->
+                                    </div>
+                                    <button type="button" class="btn-add-step" onclick="addEditStep()">
+                                        <i class="fas fa-plus"></i> 添加步骤
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="editProcessOwner"><i class="fas fa-user-check"></i> 流程负责人</label>
+                                <input type="text" id="editProcessOwner" placeholder="负责此流程的人员">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="editProcessVersion"><i class="fas fa-code-branch"></i> 版本号</label>
+                                <input type="text" id="editProcessVersion" placeholder="例如：1.0">
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i> 保存修改
+                            </button>
+                            <button type="button" class="btn-secondary" onclick="closeModal('editProcessModal')">
+                                取消
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 确认删除流程模态框（新增） -->
+        <div class="modal" id="confirmDeleteProcessModal">
+            <div class="modal-content small">
+                <div class="modal-header">
+                    <h2><i class="fas fa-exclamation-triangle"></i> 确认删除流程</h2>
+                    <button class="modal-close" onclick="closeModal('confirmDeleteProcessModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="deleteProcessConfirmText">确定要删除这个流程吗？此操作不可恢复。</p>
+                    <input type="hidden" id="processToDeleteId">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-danger" onclick="confirmDeleteProcess()">
+                        <i class="fas fa-trash"></i> 确认删除
+                    </button>
+                    <button class="btn-secondary" onclick="closeModal('confirmDeleteProcessModal')">
+                        取消
                     </button>
                 </div>
             </div>
@@ -533,3 +676,4 @@
     <script src="js/main.js"></script>
 </body>
 </html>
+
